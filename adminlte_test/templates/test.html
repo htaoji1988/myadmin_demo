@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block title %}
+    <title> 测试 |hello!!! </title>
+{% endblock %}
+
+
+{% block content %}
+    <p>测试extend模板</p>
+
+    <button id="test_swal" onclick="swaltest()">test swal</button>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        function swaltest() {
+            swal('信息', '测试swal', 'info');
+        }
+    </script>
+{% endblock %}

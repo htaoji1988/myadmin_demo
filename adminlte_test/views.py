@@ -1,0 +1,10 @@
+from django.shortcuts import render,HttpResponse
+
+# Create your views here.
+
+
+def test_adminlte(request):
+    return render(request,'index.html')
+
+def test2(request):
+    return render(request,'test.html')
