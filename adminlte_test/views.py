@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponse
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -13,5 +14,6 @@ def test2(request):
     return render(request, 'test.html')
 
 
+@login_required
 def base_page(request):
     return render(request, 'base.html')
