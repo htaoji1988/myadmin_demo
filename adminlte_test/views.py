@@ -9,6 +9,7 @@ def test_adminlte(request):
 
 
 def test2(request):
+    print(request.user)
     return render(request, 'test.html')
 
 

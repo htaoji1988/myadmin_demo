@@ -19,8 +19,7 @@ from adminlte_test import views as test_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('adminlte/', include('adminlte_test.urls')),
-    path('demo', test_view.test2),
-    path('', test_view.base_page),
+    path('test/', include('adminlte_test.urls')),
+    path('', include('login.urls')),
 
 ]
