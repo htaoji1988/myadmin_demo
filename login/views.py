@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
+from django.contrib import auth
 
 
 # Create your views here.
@@ -13,7 +14,6 @@ def logins(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        print(username + password)
         user = authenticate(username=username, password=password)
         if user is not None and user.is_active:
             login(request, user)
@@ -25,3 +25,9 @@ def logins(request):
             return render(request, 'mypage/login/login.html', {'message': message, })
     else:
         return render(request, 'mypage/login/login.html')
+
+
+def logout(request):
+    if request.method == "POST":
+        auth.logout(request)
+        return JsonResponse({"status": "ok"})

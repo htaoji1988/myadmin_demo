@@ -16,4 +16,8 @@ def test2(request):
 
 @login_required
 def base_page(request):
-    return render(request, 'base.html')
+    return render(request, 'mypage/base.html')
+
+@login_required
+def test_permission(request):
+    return render(request,'mypage/test.html')

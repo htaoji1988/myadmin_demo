@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>AdminLTE 2 | Starter</title>
+    <title>{% block title %}{% endblock %}</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     {% load static %}
@@ -24,6 +24,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
           apply the skin class to the body tag so the changes take effect. -->
     <link rel="stylesheet" href="{% static "dist/css/skins/skin-blue.min.css" %}">
 
+    <link rel="stylesheet" href="{% static "css/sweetalert2.min.css" %}">
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -33,6 +35,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Google Font -->
     <link rel="stylesheet" href="{% static "css/google-fonts.css" %}">
+    {% block head %}{% endblock %}
 </head>
 <!--
 BODY TAG OPTIONS:
@@ -182,15 +185,16 @@ desired effect
                             <!-- The user image in the navbar-->
                             <img src="{% static "dist/img/user2-160x160.jpg" %}" class="user-image" alt="User Image">
                             <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">Alexander Pierce</span>
+                            <span class="hidden-xs">{{ request.user }}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
-                                <img src="{% static "dist/img/user2-160x160.jpg" %}" class="img-circle" alt="User Image">
+                                <img src="{% static "dist/img/user2-160x160.jpg" %}" class="img-circle"
+                                     alt="User Image">
 
                                 <p>
-                                    Alexander Pierce - Web Developer
+                                    {{ request.user }} - Web Developer
                                     <small>Member since Nov. 2012</small>
                                 </p>
                             </li>
@@ -212,10 +216,10 @@ desired effect
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                    <a href="#" class="btn btn-default btn-flat" onclick="profile()">Profile</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                                    <a href="#" class="btn btn-default btn-flat" onclick="logout()">注 销</a>
                                 </div>
                             </li>
                         </ul>
@@ -240,7 +244,7 @@ desired effect
                     <img src="{% static "dist/img/user2-160x160.jpg" %}" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>Alexander Pierce</p>
+                    <p>{{ request.user }}</p>
                     <!-- Status -->
                     <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                 </div>
@@ -283,27 +287,10 @@ desired effect
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <h1>
-                Page Header
-                <small>Optional description</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
-                <li class="active">Here</li>
-            </ol>
-        </section>
 
-        <!-- Main content -->
-        <section class="content container-fluid">
+        {% block content %}
+        {% endblock %}
 
-            <!--------------------------
-              | Your Page Content Here |
-              -------------------------->
-
-        </section>
-        <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 
@@ -404,9 +391,34 @@ desired effect
 <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static "dist/js/adminlte.min.js" %}"></script>
+<script src="{% static "js/sweetalert2.min.js" %}"></script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. -->
+<script>
+    function profile() {
+        swal("{{ request.user }}")
+    }
+
+    function logout() {
+        var user = "{{ request.user }}"
+        $.ajax({
+            type: "POST",
+            url: "/logout/",
+            async: true,
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token  }}",
+                "user": user,
+            },
+            dataType: "json",
+            success: function (result) {
+                window.location.replace("/login/");
+            }
+        })
+    }
+</script>
+
+{% block javascript %}{% endblock %}
 </body>
 </html>
