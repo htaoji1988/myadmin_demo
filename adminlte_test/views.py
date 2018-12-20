@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.decorators import login_required
-
+from common.permission import PermissionVerify
 
 # Create your views here.
 
@@ -18,6 +18,8 @@ def test2(request):
 def base_page(request):
     return render(request, 'mypage/base.html')
 
+
 @login_required
+@PermissionVerify()
 def test_permission(request):
-    return render(request,'mypage/test.html')
+    return render(request, 'mypage/test.html')

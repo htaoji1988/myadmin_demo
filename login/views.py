@@ -1,7 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from django.contrib import auth
+from .models import User, RoleList, PermissionList
 
 
 # Create your views here.
@@ -31,3 +33,8 @@ def logout(request):
     if request.method == "POST":
         auth.logout(request)
         return JsonResponse({"status": "ok"})
+
+
+@login_required
+def NoPermission(request):
+    return render(request, 'mypage/login/permission.no.html')
