@@ -1,0 +1,39 @@
+{% extends "mypage/base.html" %}
+
+{% block title %}
+    权限管理
+{% endblock %}
+
+
+{% block content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            权限管理
+            <small>设置用户的访问权限</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 用户及权限</a></li>
+            <li class="active">权限管理</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <!--------------------------
+          | Your Page Content Here |
+          -------------------------->
+    </section>
+    <!-- /.content -->
+{% endblock %}
+
+
+{% block javascript %}
+    <script>
+
+        $("#user_manage_li").addClass("active menu-open");
+        $("#user_manage_permission").addClass("active");
+
+    </script>
+{% endblock %}

@@ -26,6 +26,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <link rel="stylesheet" href="{% static "css/sweetalert2.min.css" %}">
 
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{% static "bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" %}">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -57,7 +59,7 @@ desired effect
 |               | sidebar-mini                            |
 |---------------------------------------------------------|
 -->
-<body class="hold-transition skin-blue sidebar-mini" >
+<body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
     <!-- Main Header -->
@@ -266,17 +268,15 @@ desired effect
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">HEADER</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
+                <li><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
                 <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-                <li class="treeview">
-                    <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-                        <span class="pull-right-container">
-                <i class="fa fa-angle-left pull-right"></i>
-              </span>
+                <li class="treeview" id="user_manage_li">
+                    <a href="#"><i class="fa fa-user-o"></i> <span>用户和权限</span>
+                        <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="#">Link in level 2</a></li>
-                        <li><a href="#">Link in level 2</a></li>
+                        <li id="user_manage_user"><a href="{% url "user_manage" %}">用户管理</a></li>
+                        <li id="user_manage_permission"><a href="{% url "user_permission" %}">权限管理</a></li>
                     </ul>
                 </li>
             </ul>
@@ -301,7 +301,7 @@ desired effect
             Anything you want
         </div>
         <!-- Default to the left -->
-        <strong>Copyright &copy; 2016 <a href="#">Company</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2018 <a href="#">Company</a>.</strong> All rights reserved.
     </footer>
 
     <!-- Control Sidebar -->
@@ -392,13 +392,16 @@ desired effect
 <!-- AdminLTE App -->
 <script src="{% static "dist/js/adminlte.min.js" %}"></script>
 <script src="{% static "js/sweetalert2.min.js" %}"></script>
+<!-- DataTables -->
+<script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
+<script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. -->
 <script>
     function profile() {
-        swal("user","{{ request.user }}","info")
+        swal("user", "{{ request.user }}", "info")
     }
 
     function logout() {
@@ -417,6 +420,7 @@ desired effect
             }
         })
     }
+
 </script>
 
 {% block javascript %}{% endblock %}

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
+from common.permission import PermissionVerify
 from .models import User, RoleList, PermissionList
 
 
@@ -38,3 +39,67 @@ def logout(request):
 @login_required
 def NoPermission(request):
     return render(request, 'mypage/login/permission.no.html')
+
+
+@login_required
+def user_manage(request):
+    user_objs = User.objects.filter()
+    res_list = []
+    for i in user_objs:
+        dic = {}
+        dic['username'] = i.username
+        dic['nickname'] = i.nickname
+        dic['sex'] = i.sex
+        dic['email'] = i.email
+        dic['status'] = i.is_active
+        dic['role'] = i.role
+        dic['last_login'] = i.last_login
+        res_list.append(dic)
+    role_objs = RoleList.objects.filter()
+    role_list = []
+    for i in role_objs:
+        role_list.append(i.name)
+    return render(request, 'mypage/login/user_manage.html', {"result_list": res_list, "role_list": role_list})
+
+
+@login_required
+def permission_manage(request):
+    return render(request, 'mypage/login/user_permission.html')
+
+
+@login_required
+def user_add(request):
+    if request.method == "POST":
+        user = request.POST.get("user_name")
+        if (User.objects.filter(username=user)):
+            return JsonResponse({"result": "false", "content": "用户已经存在"})
+
+        dic = {
+            "username": request.POST.get("user_name"),
+            "password": request.POST.get("passwd"),
+            "email": request.POST.get("email"),
+        }
+        user = User.objects.create_user(**dic)
+        user.save()
+
+        if (request.POST.get("isactive") == "启用"):
+            status = True
+        else:
+            status = False
+
+        role = request.POST.get("role")
+        role_obj = RoleList.objects.filter(name=role)
+        if role_obj:
+            role_id = role_obj[0].id
+        else:
+            role_id = None
+        dic2 = {
+            "sex": request.POST.get("sex"),
+            "is_active": status,
+            "nickname": request.POST.get("nickname"),
+            "role_id": role_id
+        }
+
+        User.objects.filter(username=user).update(**dic2)
+
+        return JsonResponse({"result": "success"})
