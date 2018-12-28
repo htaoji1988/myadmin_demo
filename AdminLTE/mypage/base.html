@@ -270,14 +270,15 @@ desired effect
             <ul class="sidebar-menu" data-widget="tree">
                 <li class="header">HEADER</li>
                 <!-- Optionally, you can add icons to the links -->
-                <li><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-                <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+                <li><a href="#"><i class="fa fa-link"></i> <span>预留连接1</span></a></li>
+                <li><a href="#"><i class="fa fa-link"></i> <span>预留连接2</span></a></li>
                 <li class="treeview" id="user_manage_li">
                     <a href="#"><i class="fa fa-user-o"></i> <span>用户和权限</span>
                         <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                     </a>
                     <ul class="treeview-menu">
                         <li id="user_manage_user"><a href="{% url "user_manage" %}">用户管理</a></li>
+                        <li id="user_manage_role"><a href="{% url "role_manage" %}">角色管理</a></li>
                         <li id="user_manage_permission"><a href="{% url "user_permission" %}">权限管理</a></li>
                     </ul>
                 </li>

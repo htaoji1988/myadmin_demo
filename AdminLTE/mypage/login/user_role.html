@@ -1,7 +1,7 @@
 {% extends "mypage/base.html" %}
 
 {% block title %}
-    权限管理
+    用户角色管理
 {% endblock %}
 
 {% block head %}
@@ -12,12 +12,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            权限管理
-            <small>角色访问权配置</small>
+            角色管理
+            <small>角色及权限控制</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> 用户及权限</a></li>
-            <li class="active">权限管理</li>
+            <li class="active">角色管理</li>
         </ol>
     </section>
 
@@ -33,17 +33,14 @@
                 <div class="box">
                     <!-- /.box-header -->
                     <div class="box-body" style="width: 60%">
-                        <button type="button" class="btn btn-block btn-info " style="width: 120px"
-                                id="create_permission"><i
-                                class="fa fa-plus" aria-hidden="true"></i>&nbsp;新增权限
+                        <button type="button" class="btn btn-block btn-info " style="width: 120px" id="create_user"><i
+                                class="fa fa-plus" aria-hidden="true"></i>&nbsp;新建角色
                         </button>
-                        <hr>
-                        <table class="table table-bordered table-striped table-hover" id="role_table">
+                        <table class="table table-bordered table-striped table-hover" id="role_table" >
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>名称</th>
-                                <th>URL</th>
+                                <th>角色名称</th>
                                 <th style="width: 10%">操作</th>
                             </tr>
                             </thead>
@@ -53,13 +50,12 @@
 
                                     <td>{{ i.id }}</td>
                                     <td>{{ i.name }}</td>
-                                    <td>{{ i.url }}</td>
                                     <td>
-                                        <a href="#" onclick="edit_permission_modal(this)"><i class="fa fa-pencil-square-o"
+                                        <a href="#" onclick="edit_user_modal(this)"><i class="fa fa-pencil-square-o"
                                                                                        aria-hidden="true"></i></a>
                                         &nbsp;&nbsp;&nbsp;
-                                        <a href="#" onclick="del_permission(this)"><i class="fa fa-trash-o"
-                                                                                      aria-hidden="true"></i></a>
+                                        <a href="#" onclick="del_user(this)"><i class="fa fa-trash-o"
+                                                                                aria-hidden="true"></i></a>
                                     </td>
 
                                 </tr>
@@ -83,26 +79,68 @@
                             &times;
                         </button>
                         <h4 class="modal-title" id="myModalLabel">
-                            新增权限
+                            新增用户
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <form class="form-horizontal" role="form" id="permission_add_form">
+                        <form class="form-horizontal" role="form" id="user_form">
                             {% csrf_token %}
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">名 称</label>
+                                <label class="col-sm-3 control-label">用户名</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" id="permission_name_add"
-                                           name="permission_name"
-                                           placeholder="请输入名称">
+                                    <input type="text" class="form-control" id="user_name" name="user_name"
+                                           placeholder="请输入用户名">
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">URL</label>
+                                <label class="col-sm-3 control-label">密 码</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" name="permission_url" value=""
-                                           id="permission_url_add" placeholder="请输入 url address">
+                                    <input type="password" class="form-control" id="passwd" name="passwd"
+                                           placeholder="请输入密码">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">姓 名</label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control" name="nickname" value="" id="nickname"
+                                           placeholder="姓 名">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">性 别</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="sex" name="sex">
+                                        <option selected="selected">男</option>
+                                        <option>女</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">E-mail</label>
+                                <div class="col-sm-7">
+                                    <input type="email" class="form-control" name="email" value="" id="email"
+                                           placeholder="E-mail">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">状 态</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="isactive" name="isactive">
+                                        <option></option>
+                                        <option selected="selected">启用</option>
+                                        <option>禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">角 色</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="role" name="role">
+                                        <option selected="selected"></option>
+                                        {% for role in role_list %}
+                                            <option>{{ role }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </form>
@@ -110,7 +148,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <button type="button" class="btn btn-primary" id="permission_add_submit">
+                        <button type="button" class="btn btn-primary" id="user_submit">
                             提交
                         </button>
                     </div>
@@ -131,30 +169,57 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <form class="form-horizontal" role="form" id="permission_form_edit">
+                        <form class="form-horizontal" role="form" id="user_form_edit">
                             {% csrf_token %}
-                            <div class="form-group" hidden>
-                                <label class="col-sm-3 control-label">ID</label>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">用户名</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" id="permission_id_edit"
-                                           name="permission_id">
+                                    <input type="text" class="form-control" id="user_name_edit" name="user_name"
+                                           placeholder="请输入用户名" disabled>
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">名 称</label>
+                                <label class="col-sm-3 control-label">姓 名</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" id="permission_name_edit"
-                                           name="permission_name"
-                                           placeholder="请输入名称">
+                                    <input type="text" class="form-control" id="nickname_edit" name="nickname" value=""
+                                           placeholder="姓 名">
                                 </div>
                             </div>
-
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">URL</label>
+                                <label class="col-sm-3 control-label">性 别</label>
                                 <div class="col-sm-7">
-                                    <input type="text" class="form-control" name="permission_url" value=""
-                                           id="permission_url_edit" placeholder="请输入 url address">
+                                    <select class="form-control" id="sex_edit" name="sex">
+                                        <option selected="selected">男</option>
+                                        <option>女</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">E-mail</label>
+                                <div class="col-sm-7">
+                                    <input type="email" class="form-control" id="email_edit" name="email" value=""
+                                           placeholder="E-mail">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">状 态</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="isactive_edit" name="isactive">
+                                        <option></option>
+                                        <option selected="selected">启用</option>
+                                        <option>禁用</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">角 色</label>
+                                <div class="col-sm-7">
+                                    <select class="form-control" id="role_edit" name="role">
+                                        <option selected="selected"></option>
+                                        {% for role in role_list %}
+                                            <option>{{ role }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </form>
@@ -162,7 +227,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭
                         </button>
-                        <button type="button" class="btn btn-primary" id="permission_edit_submit">
+                        <button type="button" class="btn btn-primary" id="user_edit_submit">
                             提交
                         </button>
                     </div>
@@ -179,14 +244,14 @@
     <script>
 
         $("#user_manage_li").addClass("active menu-open");
-        $("#user_manage_permission").addClass("active");
+        $("#user_manage_role").addClass("active");
 
 
         $('#role_table').DataTable({
             'paging': true,
             'ordering': false,
-            "searching": true,
-            "lengthChange": true,
+            "searching": false,
+            "lengthChange": false,
             'info': true,
             'autoWidth': false
         });
@@ -199,58 +264,67 @@
                 validating: 'glyphicon glyphicon-refresh'
             },
             fields: {
-                permission_name: {
-                    message: '名称验证失败',
+                user_name: {
+                    message: '用户名验证失败',
                     validators: {
                         notEmpty: {
-                            message: '名称不能为空'
+                            message: '用户名不能为空'
                         },
                         stringLength: {
-                            max: 64,
-                            message: '名称长度不能超过64'
+                            min: 4,
+                            max: 18,
+                            message: '用户名长度必须在4到18位之间'
                         },
                     }
                 },
-                permission_url: {
-                    message: 'url验证失败',
+                passwd: {
+                    message: '密码验证失败',
                     validators: {
                         notEmpty: {
-                            message: 'url不能为空'
+                            message: '密码不能为空'
                         },
                         stringLength: {
-                            max: 255,
-                            message: 'url长度不能超过255'
+                            min: 6,
+                            max: 32,
+                            message: '密码长度必须在6到32位之间'
                         },
                     }
                 },
+                email: {
+                    validators: {
+                        notEmpty: {
+                            message: '邮箱地址不能为空'
+                        }
+                    }
+                }
             }
         });
 
 
-        $("#permission_add_submit").click(function () {
+        $("#user_submit").click(function () {
             $(".form-horizontal").bootstrapValidator('validate');
             if ($(".form-horizontal").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码
                 submit();//验证成功后的操作，如ajax
             }
         });
 
-        $("#permission_edit_submit").click(function () {
+        $("#user_edit_submit").click(function () {
             $(".form-horizontal").bootstrapValidator('validate');
             if ($(".form-horizontal").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码
                 update();
             }
         });
 
-        $("#create_permission").click(function () {
-            $("#permission_add_form")[0].reset();
+        $("#create_user").click(function () {
+            $("#user_form")[0].reset();
             $("#myModal").modal('show');
         });
 
         function submit() {
             $.ajax({
                 type: "post",
-                url:{% url "permission_add" %},
-                data: $("#permission_add_form").serialize(),
+                url:{% url "user_add" %},
+                data: $("#user_form").serialize(),
                 success: function (result) {
                     if (result.result === "success") {
                         swal({
@@ -283,10 +357,11 @@
         }
 
         function update() {
+            $("#user_name_edit").removeAttr("disabled")
             $.ajax({
                 type: "post",
-                url:{% url "permission_update" %},
-                data: $("#permission_form_edit").serialize(),
+                url:{% url "user_update" %},
+                data: $("#user_form_edit").serialize(),
                 success: function (result) {
                     if (result.result === "success") {
                         swal({
@@ -318,28 +393,28 @@
             });
         }
 
-        function del_permission(e) {
+        function del_user(e) {
             swal({
                 title: 'Are you sure?',
-                text: "确定要删除这条策略吗!",
+                text: "确定要删除该用户!",
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 confirmButtonText: '删除'
             }).then(function (isConfirm) {
-                let permission_id = e.parentNode.parentNode.children[0].innerHTML;
+                let user_name = e.parentNode.parentNode.children[0].innerHTML;
                 $.ajax({
                     type: "post",
-                    url:{% url "permission_del" %},
+                    url:{% url "user_del" %},
                     data: {
                         'csrfmiddlewaretoken': '{{ csrf_token }}',
-                        "permission_id": permission_id
+                        "user_name": user_name
                     },
                     success: function (result) {
                         if (result.result === "success") {
                             swal({
                                 title: "Success!",
-                                text: "删除成功!",
+                                text: "用户删除成功!",
                                 type: "success"
                             }).then(function (isConfirm) {
                                 window.location.reload();
@@ -367,12 +442,15 @@
             });
         }
 
-        function edit_permission_modal(e) {
-            $("#permission_form_edit")[0].reset();
+        function edit_user_modal(e) {
+            $("#user_form_edit")[0].reset();
             $("#myModal_edit").modal('show');
-            $("#permission_id_edit").val(e.parentNode.parentNode.children[0].innerHTML);
-            $("#permission_name_edit").val(e.parentNode.parentNode.children[1].innerHTML);
-            $("#permission_url_edit").val(e.parentNode.parentNode.children[2].innerHTML);
+            $("#user_name_edit").val(e.parentNode.parentNode.children[0].innerHTML);
+            $("#nickname_edit").val(e.parentNode.parentNode.children[1].innerHTML);
+            $("#sex_edit").val(e.parentNode.parentNode.children[2].innerHTML);
+            $("#email_edit").val(e.parentNode.parentNode.children[3].innerHTML);
+            $("#isactive_edit").val(e.parentNode.parentNode.children[4].children[0].innerHTML);
+            $("#role_edit").val(e.parentNode.parentNode.children[5].innerHTML);
         }
     </script>
 {% endblock %}

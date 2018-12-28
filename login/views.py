@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
+from django.db.models import Q
 from common.permission import PermissionVerify
 from .models import User, RoleList, PermissionList
 
@@ -65,8 +66,106 @@ def user_manage(request):
 
 
 @login_required
+def role_manage(request):
+    role_objs = RoleList.objects.filter()
+    res_list = []
+    for i in role_objs:
+        dic = {}
+        dic['id'] = i.id
+        dic['name'] = i.name
+        res_list.append(dic)
+    return render(request, 'mypage/login/user_role.html', {"result_list": res_list})
+
+
+@login_required
 def permission_manage(request):
-    return render(request, 'mypage/login/user_permission.html')
+    role_objs = PermissionList.objects.filter()
+    res_list = []
+    for i in role_objs:
+        dic = {}
+        dic['id'] = i.id
+        dic['name'] = i.name
+        dic['url'] = i.url
+        res_list.append(dic)
+    return render(request, 'mypage/login/user_permission.html', {"result_list": res_list})
+
+
+@login_required
+def permission_add(request):
+    if request.method == "POST":
+        name = request.POST.get("permission_name")
+        url = request.POST.get("permission_url")
+        kwargs = {}
+        obj_exsit = PermissionList.objects.filter(Q(name=name) | Q(url=url))
+        if obj_exsit:
+            res_dic = {
+                "result": "false",
+                "content": "name 或者 url已经存在，无法重复添加"
+            }
+        else:
+            kwargs['name'] = name
+            kwargs['url'] = url
+            try:
+                PermissionList.objects.create(**kwargs)
+                print(kwargs)
+                res_dic = {
+                    "result": "success",
+                    "content": ""
+                }
+            except Exception as e:
+                res_dic = {
+                    "result": "success",
+                    "content": e
+                }
+        return JsonResponse(res_dic)
+
+
+@login_required
+def permission_update(request):
+    if request.method == "POST":
+        id = request.POST.get("permission_id")
+        print()
+        kwargs = {
+            "name": request.POST.get("permission_name"),
+            "url": request.POST.get("permission_url")
+        }
+        res_dic = {}
+        obj_permission = PermissionList.objects.filter(id=id)
+        if obj_permission:
+            try:
+                obj_permission.update(**kwargs)
+                res_dic = {
+                    "result": "success",
+                    "content": ""
+                }
+            except Exception as e:
+                res_dic = {
+                    "result": "false",
+                    "content": e
+                }
+
+        return JsonResponse(res_dic)
+
+
+@login_required
+def permission_del(request):
+    if request.method == "POST":
+        res_dic = {}
+        id = request.POST.get("permission_id")
+        obj_permission = PermissionList.objects.get(id=id)
+        if obj_permission:
+            try:
+                obj_permission.delete()
+                res_dic = {
+                    "result": "success",
+                    "content": ""
+                }
+            except Exception as e:
+                res_dic = {
+                    "result": "false",
+                    "content": e
+                }
+        return JsonResponse(res_dic)
 
 
 @login_required
@@ -103,7 +202,6 @@ def user_add(request):
         }
 
         User.objects.filter(username=user).update(**dic2)
-
         return JsonResponse({"result": "success"})
 
 
@@ -148,5 +246,3 @@ def user_update(request):
             return JsonResponse({"result": "success"})
         except Exception as e:
             return JsonResponse({"result": "false", "content": e})
-
-
