@@ -20,8 +20,10 @@ def logins(request):
         user = authenticate(username=username, password=password)
         if user is not None and user.is_active:
             login(request, user)
+            user_role = User.objects.get(username=username).role
             request.session['username'] = username
             request.session['password'] = password
+            request.session['rolename'] = str(user_role)
             return HttpResponseRedirect(request.GET.get('next', '/test/basic/'))
         else:
             message = """用户名或者密码不正确"""
@@ -103,3 +105,48 @@ def user_add(request):
         User.objects.filter(username=user).update(**dic2)
 
         return JsonResponse({"result": "success"})
+
+
+@login_required
+def user_del(request):
+    if request.method == "POST":
+        user = request.POST.get("user_name")
+        obj_user = User.objects.filter(username=user)
+        if obj_user:
+            obj_user.delete()
+            return JsonResponse({"result": "success"})
+        else:
+            return JsonResponse({"result": "false", "content": "出现了一些异常"})
+
+
+@login_required
+def user_update(request):
+    if request.method == "POST":
+        username = request.POST.get("user_name")
+        if request.POST.get("isactive") == "启用":
+            isactive = True
+        else:
+            isactive = False
+
+        role = request.POST.get("role")
+        role_obj = RoleList.objects.filter(name=role)
+        if role_obj:
+            role_id = role_obj[0].id
+        else:
+            role_id = None
+
+        kwargs = {
+            "nickname": request.POST.get("nickname"),
+            "sex": request.POST.get("sex"),
+            "email": request.POST.get("email"),
+            "is_active": isactive,
+            "role_id": role_id
+        }
+        user_obj = User.objects.filter(username=username)
+        try:
+            user_obj.update(**kwargs)
+            return JsonResponse({"result": "success"})
+        except Exception as e:
+            return JsonResponse({"result": "false", "content": e})
+
+

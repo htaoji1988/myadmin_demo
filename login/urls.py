@@ -9,5 +9,7 @@ urlpatterns = [
     path('permission/deny/', views.NoPermission, name='permissiondenyurl'),
     path('user_manage/', views.user_manage, name='user_manage'),
     path('user_add/', views.user_add, name='user_add'),
+    path('user_del/', views.user_del, name='user_del'),
+    path('user_update/', views.user_update, name='user_update'),
     path('user_permission/', views.permission_manage, name='user_permission')
 ]
