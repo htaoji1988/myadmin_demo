@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.db.models import Q
 from common.permission import PermissionVerify
 from .models import User, RoleList, PermissionList
+from django.urls import reverse
 
 
 # Create your views here.
@@ -45,6 +46,7 @@ def NoPermission(request):
 
 
 @login_required
+@PermissionVerify()
 def user_manage(request):
     user_objs = User.objects.filter()
     res_list = []
@@ -55,29 +57,93 @@ def user_manage(request):
         dic['sex'] = i.sex
         dic['email'] = i.email
         dic['status'] = i.is_active
-        dic['role'] = i.role
+        if i.is_superuser:
+            dic['role'] = "superuser"
+        else:
+            dic['role'] = i.role
         dic['last_login'] = i.last_login
         res_list.append(dic)
     role_objs = RoleList.objects.filter()
     role_list = []
     for i in role_objs:
         role_list.append(i.name)
-    return render(request, 'mypage/login/user_manage.html', {"result_list": res_list, "role_list": role_list})
+    return render(request, 'mypage/login/user_manage.html',
+                  {"result_list": res_list, "role_list": role_list})
 
 
 @login_required
+@PermissionVerify()
 def role_manage(request):
+    role_names = RoleList.objects.filter().values('name').distinct()
+    urls = PermissionList.objects.filter().values('url').distinct()
     role_objs = RoleList.objects.filter()
     res_list = []
     for i in role_objs:
-        dic = {}
-        dic['id'] = i.id
-        dic['name'] = i.name
-        res_list.append(dic)
-    return render(request, 'mypage/login/user_role.html', {"result_list": res_list})
+        pmss = i.permission.all()
+        for pms in pmss:
+            dic = {}
+            dic['id'] = i.id
+            dic['name'] = i.name
+            dic['url'] = pms.url
+            res_list.append(dic)
+    return render(request, 'mypage/login/user_role.html',
+                  {"result_list": res_list, "role_names": role_names, "urls": urls})
 
 
 @login_required
+def role_add(request):
+    if request.method == "POST":
+        return_list = {}
+        role_name = request.POST.get('role_name')
+        url = request.POST.get('url').strip()
+
+        exsits = RoleList.objects.filter(name=role_name)
+
+        urls_exsit = []
+        pmss = exsits[0].permission.all()
+        for pms in pmss:
+            urls_exsit.append(pms.url)
+        if url in urls_exsit:
+            return_list = {
+                "result": "False",
+                "content": "该角色已经拥有%s的访问权限！" % url
+            }
+        else:
+            urs_add = PermissionList.objects.filter(url=url)
+            if not urs_add:
+                return_list = {
+                    "result": "False",
+                    "content": "URL %s 在url管理中不存在请先添加" % url
+                }
+            else:
+                permission_add = PermissionList.objects.get(url=url)
+                RoleList.objects.get(name=role_name).permission.add(permission_add)
+                return_list = {
+                    "result": "success",
+                    "content": ""
+                }
+
+        return JsonResponse(return_list)
+
+
+@login_required
+def role_delete(request):
+    if request.method == "POST":
+        role_name = request.POST.get('role_name')
+        url = request.POST.get('url').strip()
+
+        permission_del = PermissionList.objects.get(url=url)
+        RoleList.objects.get(name=role_name).permission.remove(permission_del)
+        return_list = {
+            "result": "success",
+            "content": ""
+        }
+
+        return JsonResponse(return_list)
+
+
+@login_required
+@PermissionVerify()
 def permission_manage(request):
     role_objs = PermissionList.objects.filter()
     res_list = []
@@ -169,6 +235,7 @@ def permission_del(request):
 
 
 @login_required
+@PermissionVerify()
 def user_add(request):
     if request.method == "POST":
         user = request.POST.get("user_name")

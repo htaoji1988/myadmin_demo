@@ -15,7 +15,6 @@ def PermissionVerify():
     def decorator(view_func):
         def _wrapped_view(request, *args, **kwargs):
             iUser = User.objects.get(username=request.user)
-
             if not iUser.is_superuser:  # 判断用户如果是超级管理员则具有所有权限
                 if not iUser.role:  # 如果用户无角色，直接返回无权限
                     return HttpResponseRedirect(reverse('permissiondenyurl'))

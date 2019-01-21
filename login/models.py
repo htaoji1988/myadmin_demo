@@ -6,7 +6,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 class PermissionList(models.Model):
     name = models.CharField(max_length=64)
-    url = models.CharField(max_length=255)
+    url = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return '%s(%s)' % (self.name, self.url)
