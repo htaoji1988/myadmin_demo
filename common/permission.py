@@ -37,9 +37,6 @@ def PermissionVerify():
                     return HttpResponseRedirect(reverse('permissiondenyurl'))
             else:
                 pass
-
             return view_func(request, *args, **kwargs)
-
         return _wrapped_view
-
     return decorator
