@@ -236,7 +236,6 @@ def permission_del(request):
 
 
 @login_required
-@PermissionVerify()
 def user_add(request):
     if request.method == "POST":
         user = request.POST.get("user_name")

@@ -184,7 +184,6 @@
                 success: function (result) {
                     if (result.result === "success") {
                         swal({
-                            title: "Success!",
                             text: "策略添加成功!",
                             type: "success"
                         }).then(function (isConfirm) {
@@ -192,7 +191,6 @@
                         });
                     } else {
                         swal({
-                            title: "添加权限失败!",
                             text: result.content,
                             type: "warning"
                         }).then(function (isConfirm) {
@@ -202,7 +200,6 @@
                 },
                 error: function () {
                     swal({
-                        title: "Error!",
                         text: "出了一些问题请联系管理员",
                         type: "error"
                     }).then(function (isConfirm) {
@@ -221,7 +218,6 @@
                 success: function (result) {
                     if (result.result === "success") {
                         swal({
-                            title: "Success!",
                             text: "用户添加成功!",
                             type: "success"
                         }).then(function (isConfirm) {
@@ -229,7 +225,6 @@
                         });
                     } else {
                         swal({
-                            title: "Error!",
                             text: result.content,
                             type: "error"
                         }).then(function (isConfirm) {
@@ -239,7 +234,6 @@
                 },
                 error: function () {
                     swal({
-                        title: "Error!",
                         text: "出了一些问题请联系管理员",
                         type: "error"
                     }).then(function (isConfirm) {
@@ -271,7 +265,6 @@
                     success: function (result) {
                         if (result.result === "success") {
                             swal({
-                                title: "Success!",
                                 text: "策略删除成功!",
                                 type: "success"
                             }).then(function (isConfirm) {
@@ -279,7 +272,6 @@
                             });
                         } else {
                             swal({
-                                title: "Error!",
                                 text: result.content,
                                 type: "error"
                             }).then(function (isConfirm) {
@@ -289,7 +281,6 @@
                     },
                     error: function () {
                         swal({
-                            title: "Error!",
                             text: "出了一些问题请联系管理员",
                             type: "error"
                         }).then(function (isConfirm) {
