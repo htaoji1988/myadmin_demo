@@ -279,14 +279,6 @@
                 validating: 'glyphicon glyphicon-refresh'
             },
             fields: {
-                nickname: {
-                    message: '姓名验证失败',
-                    validators: {
-                        notEmpty: {
-                            message: '姓名不能为空'
-                        },
-                    }
-                },
                 user_name: {
                     message: '用户名验证失败',
                     validators: {
@@ -475,13 +467,5 @@
             $("#isactive_edit").val(e.parentNode.parentNode.children[4].children[0].innerHTML);
             $("#role_edit").val(e.parentNode.parentNode.children[5].innerHTML);
         }
-
-        $('#myModal').on('hide.bs.modal', function (e) {
-            $('#user_form').data('bootstrapValidator').resetForm();
-        });
-
-        $('#myModal_edit').on('hide.bs.modal', function (e) {
-            $('#user_form_edit').data('bootstrapValidator').resetForm();
-        });
     </script>
 {% endblock %}

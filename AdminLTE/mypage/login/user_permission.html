@@ -55,8 +55,9 @@
                                     <td>{{ i.name }}</td>
                                     <td>{{ i.url }}</td>
                                     <td>
-                                        <a href="#" onclick="edit_permission_modal(this)"><i class="fa fa-pencil-square-o"
-                                                                                       aria-hidden="true"></i></a>
+                                        <a href="#" onclick="edit_permission_modal(this)"><i
+                                                class="fa fa-pencil-square-o"
+                                                aria-hidden="true"></i></a>
                                         &nbsp;&nbsp;&nbsp;
                                         <a href="#" onclick="del_permission(this)"><i class="fa fa-trash-o"
                                                                                       aria-hidden="true"></i></a>
@@ -374,5 +375,13 @@
             $("#permission_name_edit").val(e.parentNode.parentNode.children[1].innerHTML);
             $("#permission_url_edit").val(e.parentNode.parentNode.children[2].innerHTML);
         }
+
+        $('#myModal').on('hide.bs.modal', function (e) {
+            $('#permission_add_form').data('bootstrapValidator').resetForm();
+        });
+
+        $('#myModal_edit').on('hide.bs.modal', function (e) {
+            $('#permission_form_edit').data('bootstrapValidator').resetForm();
+        });
     </script>
 {% endblock %}

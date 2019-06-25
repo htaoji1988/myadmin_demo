@@ -131,7 +131,7 @@
         {% endfor %}
         $("#url_1").autocomplete({
             source: url_list,
-            appendTo:$("#myModal")
+            appendTo: $("#myModal")
         });
 
         $('#role_table').DataTable({
@@ -310,6 +310,10 @@
             $("#isactive_edit").val(e.parentNode.parentNode.children[4].children[0].innerHTML);
             $("#role_edit").val(e.parentNode.parentNode.children[5].innerHTML);
         }
+
+        $('#myModal').on('hide.bs.modal', function (e) {
+            $('#role_form').data('bootstrapValidator').resetForm();
+        });
     </script>
 
 {% endblock %}
