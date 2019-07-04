@@ -75,20 +75,36 @@ def user_manage(request):
 @login_required
 @PermissionVerify()
 def role_manage(request):
-    role_names = RoleList.objects.filter().values('name').distinct()
-    urls = PermissionList.objects.filter().values('url').distinct()
-    role_objs = RoleList.objects.filter()
-    res_list = []
-    for i in role_objs:
-        pmss = i.permission.all()
-        for pms in pmss:
-            dic = {}
-            dic['id'] = i.id
-            dic['name'] = i.name
-            dic['url'] = pms.url
-            res_list.append(dic)
-    return render(request, 'mypage/login/user_role.html',
-                  {"result_list": res_list, "role_names": role_names, "urls": urls})
+    if request.method == "POST":
+        role = request.POST.get("role")
+        sEcho = int(request.POST.get('sEcho'))
+        iDisplayStart = int(request.POST.get('iDisplayStart'))
+        iDisplayLength = int(request.POST.get('iDisplayLength'))
+        kwargs = {}
+        if role:
+            kwargs['name'] = role
+        role_objs = RoleList.objects.filter(**kwargs)
+        res_list = []
+        for i in role_objs:
+            pmss = i.permission.all()
+            for pms in pmss:
+                dic = {}
+                dic['id'] = i.id
+                dic['name'] = i.name
+                dic['url'] = pms.url
+                res_list.append(dic)
+        iTotalRecords = len(res_list)
+        result = {
+            "sEcho": sEcho,
+            "iTotalRecords": iTotalRecords,
+            "iTotalDisplayRecords": iTotalRecords,
+            "aaData": res_list[iDisplayStart:iDisplayLength + iDisplayStart]
+        }
+        return JsonResponse(result)
+    else:
+        role_names = RoleList.objects.filter().values('name').distinct()
+        urls = PermissionList.objects.filter().values('url').distinct()
+        return render(request, 'mypage/login/user_role.html', {"role_names": role_names, "urls": urls})
 
 
 @login_required

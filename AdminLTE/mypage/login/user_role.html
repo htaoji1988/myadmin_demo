@@ -28,36 +28,43 @@
         <!--------------------------
           | Your Page Content Here |
           -------------------------->
-
         <div class="row">
             <div class="col-md-12">
                 <div class="box">
                     <!-- /.box-header -->
                     <div class="box-body" style="width: 80%">
-                        <button type="button" class="btn btn-block btn-info " style="width: 120px" id="create_role"><i
+                        <div class="hovertable col-md-5">
+                            <div style="padding: 20px 5px 10px;">
+                                <div class="input-group">
+                                    <span class="input-group-addon"
+                                          style="background-color: #eee;color: #555">角色名</span>
+                                    <select class="form-control" name="role" id="role">
+                                        <option></option>
+                                        {% for role in role_names %}
+                                            <option>{{ role.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <span class="input-group-btn">
+                      <button id="search" class="btn btn-primary"><i class="fa fa-search fa-lg"></i></button>
+                       </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-block btn-primary " style="width: 120px;margin-top: 20px"
+                                id="create_role"><i
                                 class="fa fa-plus" aria-hidden="true"></i>&nbsp;新建关联
                         </button>
-                        <hr>
+                        <br>
                         <table class="table table-bordered table-striped table-hover" id="role_table">
                             <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>角色名称</th>
                                 <th>访问的URL</th>
                                 <th style="width: 10%">操作</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for i in result_list %}
-                                <tr>
-                                    <td>{{ i.name }}</td>
-                                    <td>{{ i.url }}</td>
-                                    <td>
-                                        <a href="#" onclick="del_role(this)"><i class="fa fa-trash-o"
-                                                                                aria-hidden="true"></i></a>
-                                    </td>
-
-                                </tr>
-                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -86,7 +93,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">角色名称</label>
                                 <div class="col-sm-7">
-                                    <select class="form-control" name="role_name">
+                                    <select class="form-control" name="role_name" id="role_name">
                                         {% for i in role_names %}
                                             <option>{{ i.name }}</option>
                                         {% endfor %}
@@ -121,6 +128,33 @@
 {% block javascript %}
     <script src="{% static "bower_components/jquery-ui/js/jquery-ui.min.js" %}"></script>
     <script>
+        function initUserList() {
+            $('#role_table').dataTable({
+                "retrieve": true,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/role_manage/",
+                    "type": "POST",
+                    "data": function (d) {
+                        d.role = $('#role_name').val();
+                    },
+                },
+                "columns": [
+                    {"data": "id"},
+                    {"data": "name"},
+                    {"data": "url"},
+                    {"data": ""}
+                ]
+            });
+        }
+
+        jQuery(document).ready(function () {
+            initUserList();
+            $("#search").click(function () {
+                initUserList();
+            })
+        });
 
         $("#user_manage_li").addClass("active menu-open");
         $("#user_manage_role").addClass("active");
@@ -137,8 +171,8 @@
         $('#role_table').DataTable({
             'paging': true,
             'ordering': false,
-            "searching": true,
-            "lengthChange": true,
+            "searching": false,
+            "lengthChange": false,
             'info': true,
             'autoWidth': false
         });
