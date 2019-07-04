@@ -24,7 +24,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           apply the skin class to the body tag so the changes take effect. -->
     <link rel="stylesheet" href="{% static "dist/css/skins/skin-blue.min.css" %}">
 
-    <link rel="stylesheet" href="{% static "css/sweetalert2.min.css" %}">
+    <link rel="stylesheet" href="{% static "bower_components/sweetalert2/css/sweetalert2.min.css" %}">
 
     <!-- DataTables -->
     <link rel="stylesheet" href="{% static "bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" %}">
@@ -394,7 +394,7 @@ desired effect
 <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
 <!-- AdminLTE App -->
 <script src="{% static "dist/js/adminlte.min.js" %}"></script>
-<script src="{% static "js/sweetalert2.min.js" %}"></script>
+<script src="{% static "bower_components/sweetalert2/js/sweetalert2.min.js" %}"></script>
 <!-- DataTables -->
 <script src="{% static "bower_components/datatables.net/js/jquery.dataTables.min.js" %}"></script>
 <script src="{% static "bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js" %}"></script>
@@ -409,7 +409,7 @@ desired effect
     }
 
     function logout() {
-        var user = "{{ request.user }}"
+        var user = "{{ request.user }}";
         $.ajax({
             type: "POST",
             url: "/logout/",
