@@ -6,7 +6,7 @@
 
 {% block head %}
     {% load static %}
-    <link rel="stylesheet" href="{% static "mystatic/css/jquery-ui.min.css" %}">
+    <link rel="stylesheet" href="{% static "bower_components/jquery-ui/css/jquery-ui.min.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -119,7 +119,7 @@
 
 
 {% block javascript %}
-    <script src="{% static "mystatic/js/jquery-ui.min.js" %}"></script>
+    <script src="{% static "bower_components/jquery-ui/js/jquery-ui.min.js" %}"></script>
     <script>
 
         $("#user_manage_li").addClass("active menu-open");
