@@ -32,7 +32,7 @@
             <div class="col-md-12">
                 <div class="box">
                     <!-- /.box-header -->
-                    <div class="box-body" style="width: 80%">
+                    <div class="box-body" style="width: 70%">
                         <div class="hovertable col-md-5">
                             <div style="padding: 20px 5px 10px;">
                                 <div class="input-group">
@@ -55,10 +55,9 @@
                                 class="fa fa-plus" aria-hidden="true"></i>&nbsp;新建关联
                         </button>
                         <br>
-                        <table class="table table-bordered table-striped table-hover" id="role_table">
+                        <table class="table table-bordered table-striped table-hover table-condensed" id="role_table">
                             <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>角色名称</th>
                                 <th>访问的URL</th>
                                 <th style="width: 10%">操作</th>
@@ -128,32 +127,86 @@
 {% block javascript %}
     <script src="{% static "bower_components/jquery-ui/js/jquery-ui.min.js" %}"></script>
     <script>
-        function initUserList() {
-            $('#role_table').dataTable({
-                "retrieve": true,
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "/role_manage/",
-                    "type": "POST",
-                    "data": function (d) {
-                        d.role = $('#role_name').val();
+        var oTable = null;
+        var initUserList = function () {
+            var table = $('#role_table');
+            if (oTable == null) { //仅第一次检索时初始化Datatable
+                oTable = table.dataTable({
+                    "destroy": true,
+                    "bProcessing": true, //DataTables载入数据时，是否显示‘进度’提示
+                    "bServerSide": true, //是否启动服务器端数据导入
+                    "bDeferRender": true,
+                    "bLengthChange": false,
+                    "iDisplayLength": 10, //默认显示的记录数
+                    "bScrollCollapse": true, //是否开启DataTables的高度自适应，当数据条数不够分页数据条数的时候，插件高度是否随数据条数而改变
+                    "bPaginate": true, //是否显示（应用）分页器
+                    "bInfo": true, //是否显示页脚信息，DataTables插件左下角显示记录数
+                    "sPaginationType": "full_numbers", //详细分页组，可以支持直接跳转到某页
+                    "bSort": false, //是否启动各个字段的排序功能
+                    "bFilter": false, //是否启动过滤、搜索功能
+                    "bAutoWidth": false,
+                    "aoColumns": [
+                        {
+                            "mDataProp": "name",
+                            "sTitle": "角色名称",
+                            "sDefaultContent": "",
+                            "sClass": "text-center",
+                            "sWidth": "30%"
+                        },
+                        {
+                            "mDataProp": "url",
+                            "sTitle": "访问的URL",
+                            "sDefaultContent": "",
+                            "sClass": "text-center",
+                            "sWidth": "60%"
+                        },
+                        {
+                            "mDataProp": "caozuo",
+                            "sTitle": "操作",
+                            "sClass": "text-center",
+                            "sWidth": "10%"
+                        }
+                    ],
+                    "columnDefs": [
+                        {
+                            "targets": -1,//确认
+                            "data": null,
+                            "orderable": false,//禁用排序
+                            "defaultContent": "<a href=\"#\" onclick=\"del_role(this)\"><i class=\"fa fa-trash-o\"\n" +
+                                "                                                                                aria-hidden=\"true\"></i></a>"
+                        }
+                    ],
+                    "fnServerParams": function (aoData) {
+                        aoData.push(
+                            {"name": "role", "value": $('#role').val()},
+                            {"name": "csrfmiddlewaretoken", "value": '{{ csrf_token }}'},
+                        )
                     },
-                },
-                "columns": [
-                    {"data": "id"},
-                    {"data": "name"},
-                    {"data": "url"},
-                    {"data": ""}
-                ]
-            });
-        }
+                    "sAjaxSource": {% url "role_manage" %},
+                    //服务器端，数据回调处理
+                    "fnServerData": function (sSource, aDataSet, fnCallback) {
+                        $.ajax({
+                            "dataType": 'json',
+                            "type": "POST",
+                            "url": sSource,
+                            "data": aDataSet,
+                            "success": function (resp) {
+                                fnCallback(resp);
+                            },
+                        });
+                    },
+                });
+            }
+            //刷新Datatable，会自动激发retrieveData
+            oTable.fnDraw();
+        };
 
         jQuery(document).ready(function () {
             initUserList();
-            $("#search").click(function () {
-                initUserList();
-            })
+        });
+
+        $("#search").click(function () {
+            initUserList();
         });
 
         $("#user_manage_li").addClass("active menu-open");
@@ -243,7 +296,7 @@
         }
 
         function update() {
-            $("#user_name_edit").removeAttr("disabled")
+            $("#user_name_edit").removeAttr("disabled");
             $.ajax({
                 type: "post",
                 url:{% url "user_update" %},
